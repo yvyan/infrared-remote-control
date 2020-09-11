@@ -7,25 +7,28 @@
 #include "remote_save.h"
 #include "guet.h"
 
+
+//主要的函数模块
 void showData(u32 data); //显示数据信息
 void data_Init(void);    //红外数据数组初始化
 void ShowSquareWave_Init(void); //初始化波形数组
 
-void SetPart(void);   //设置区号1-9  主要是为了扩大设备可用性，用不同区号相同按键实现不同的功能
-int GetPart(void);    //得到区号，便于用户区分
+void SetPart(void);   //设置区号1-9  主要是为了扩大设备可用性，用不同区号相同按键实现不同的功能（按键的复用）
+int GetPart(void);    //得到区号，在首页显示，便于用户区分
 void SendLearn(void); //学习/发送函数
 void Delete(void);    //删除数据函数
-void ShowData(void);  //展示高低电平数据函数
+void ShowData(void);  //展示输入信号信息函数
 
 
 
-int key;
-u16 data[350];
-u16 addr = 0; //偏移量
+int key; //用于记录用户按下的按键或者数据信息
+u16 data[350]; //红外数据数组，存储波形时间数据
+u16 addr = 0;  //偏移量
 unsigned char show[128 * 2] = {0}; //波形显示存储数组
 
 int main()
 {
+	//初始化部分
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); //设置NVIC中断分组2:2位抢占优先级，2位响应优先级
 	uart_init(115200);
 	delay_init(72);
@@ -37,12 +40,13 @@ int main()
 	IR_SendPort_Init();
 	ShowSquareWave_Init();
 	
+	//显示欢迎页
 	OLED_Picture(guet);
 	OLED_ShowStr(10, 1, "GUET");
 	OLED_ShowStr(8, 3, "Welcome");
+	Remote_Num(); //暂停
 	
-	Remote_Num();// 暂停显示作者信息
-	
+	//显示首页功能提示信息
 	while (1)
 	{
 		OLED_Fill_picture(0x00); //清屏
@@ -52,7 +56,7 @@ int main()
 		OLED_ShowStr(0, 2, "3.Delete");
 		OLED_ShowStr(0, 3, "4.ShowData");
 		
-		switch (Remote_Num())
+		switch (Remote_Num()) //输入数字进入相应的功能模块
 		{
 			case 1:
 				SetPart();
@@ -73,6 +77,11 @@ int main()
 
 /***************************************************************************************************/
 
+/**
+* OLED显示32位数据的信息（左边二进制，右边十进制）
+*
+* @param data 32位数据
+*/
 void showData(u32 data) 
 {
 	OLED_Fill_picture(0x00); //清屏
@@ -89,6 +98,9 @@ void showData(u32 data)
 	OLED_ShowNum(10, 3, data % 256, 3);
 }
 
+/**
+* 红外数据数组初始化
+*/
 void data_Init(void)
 {
 	int i;
@@ -98,6 +110,9 @@ void data_Init(void)
 	}
 }
 
+/**
+* 设置区号1-9  主要是为了扩大设备可用性，用不同区号相同按键实现不同的功能（按键的复用）
+*/
 void SetPart(void)
 {
 	OLED_Fill_picture(0x00); //清屏
@@ -115,6 +130,9 @@ void SetPart(void)
 	}
 }
 
+/**
+* 得到区号，在首页显示，便于用户区分
+*/
 int GetPart(void)
 {
 	return addr / 20 + 1;
@@ -171,6 +189,9 @@ void AnalogLearn(void)
 	}
 }
 
+/**
+* 学习/发送函数
+*/
 void SendLearn(void)
 {
 	int dot = 0; //用了记录上次执行了哪个操作，确定是否需要清空屏幕
@@ -239,6 +260,9 @@ void SendLearn(void)
 	}
 }
 
+/**
+* 删除数据函数
+*/
 void Delete(void)    //删除数据函数
 {
 	OLED_Fill_picture(0x00); //清屏
@@ -266,6 +290,9 @@ void Delete(void)    //删除数据函数
 	}
 }
 
+/**
+* 初始化波形数组
+*/
 void ShowSquareWave_Init(void)
 {
 	int i, j;
@@ -315,6 +342,9 @@ void ShowSquareWave_Init(void)
 	}
 }
 
+/**
+* OLED展示波形函数（仅波形）
+*/
 void ShowSquareWave(void)
 {
 	OLED_Picture_Part(show, 4, 2);
@@ -380,7 +410,10 @@ void ShowDataAnalog(u16 * pBuffer, u16 lenth)
 	}
 }
 
-void ShowData(void)  //展示高低电平数据函数
+/**
+* 展示输入信号信息函数
+*/
+void ShowData(void)
 {
 	while (1)
 	{
