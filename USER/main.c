@@ -17,7 +17,7 @@ void SendLearn(void); //学习/发送函数
 void Delete(void);    //删除数据函数
 void ShowData(void);  //展示高低电平数据函数
 
-//V0.8
+
 
 int key;
 u16 data[350];
@@ -134,7 +134,7 @@ void DigitalLearn(void)
 		if (key == POWER)
 			break;
 		OLED_ShowStr(0, 1, "Getting...");
-		get = Remote_Test2();
+		get = Remote_GetData();
 		showData(get);
 		data[0] = (u16)get;
 		data[1] = (u16)(get >> 16);
@@ -410,7 +410,7 @@ void ShowData(void)  //展示高低电平数据函数
 					{
 						OLED_Fill_picture(0x00); //清屏
 						OLED_ShowStr(0, 0, "Getting...");
-						key = Remote_Test2();
+						key = Remote_GetData();
 						showData(key);
 						key = Remote_Num(); //POWER退出，其它按键继续
 						if (key == POWER)

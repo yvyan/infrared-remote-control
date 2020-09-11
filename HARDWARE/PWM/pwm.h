@@ -6,5 +6,8 @@
 #define __PWM_H__
 #include "sys.h"
 
+/**
+* 定时器2PWM波形输出初始化
+*/
 void TIM2_PWM_Init(u16 arr,u16 psc);
 #endif

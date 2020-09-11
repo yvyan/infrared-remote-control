@@ -13,6 +13,10 @@
 * Return         : void
 *********************************************************************/
 //TIM2_PWM_Init(1895,0); 72000/(1895+1) = 37.99K
+
+/**
+* 定时器2PWM波形输出初始化
+*/
 void TIM2_PWM_Init(u16 arr,u16 psc)
 {
 	/* 初始化结构体定义 */
@@ -48,41 +52,3 @@ void TIM2_PWM_Init(u16 arr,u16 psc)
 	/* 使能定时器 */
 	TIM_Cmd(TIM2, ENABLE); 			
 }
-
-
-
-/*main.c主函数
-#include "pwm.h"
-int main(void)
-{	
-
-	DelayInit();	    //延时函数初始化	  
-	LED_Init();
-	NVIC_Configuration();	//设置NVIC中断分组2:2位抢占优先级，2位响应优先级 
-	UartInit(9600);
-	TIM2_PWM_Init(1895,0);	//72000/(1895+1) = 37.99K
-						  
-	LED1 = 0;
-  	while(1)d
-	{
-	
-
-	} 
-  	
-}
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

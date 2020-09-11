@@ -1,9 +1,10 @@
 #include "remote.h"
 #include "delay.h"
-#include "usart.h"
 
 
-//红外遥控初始化
+/**
+* 红外传感器接收头引脚初始化
+*/
 //设置IO以及定时器4的输入捕获
 void Remote_Init(void)    			  
 {  
@@ -65,12 +66,13 @@ void Remote_OFF(void)
 	TIM_ITConfig( TIM4,TIM_IT_Update|TIM_IT_CC4,DISABLE);
 }
 
-u8 start = 0;
-u16 a[350];
-u16 i = 0;
-u8 type = 0;
+u8 start = 0; //标志记录模式是否开启
+u16 a[350];   //用于记录模式下记录波形时间数据
+u16 i = 0;    //数组index
+u8 type = 0;  //记录波形初始电平（仅用于验证，因为选择下降沿捕获，记录的第一个时间为低电平持续时间）
 
-//遥控器接收状态
+//遥控器接收状态：
+//
 //[7]:收到了引导码标志
 //[6]:得到了一个按键的所有信息
 //[5]:保留	
@@ -80,6 +82,7 @@ u8 	RmtSta=0;
 u16 Dval;		  //下降沿时计数器的值
 u32 RmtRec=0;	//红外接收到的数据	   		    
 u8  RmtCnt=0;	//按键按下的次数	  
+
 //定时器4中断服务程序	 
 void TIM4_IRQHandler(void)
 {
@@ -104,7 +107,7 @@ void TIM4_IRQHandler(void)
 		if(RDATA)//上升沿捕获
 		{
 			int temp = TIM_GetCapture4(TIM4);
-			if (start)
+			if (start) // 记录持续时间数据
 			{
 				if (type == 0)
 					type = 1;
@@ -117,7 +120,7 @@ void TIM4_IRQHandler(void)
 		else //下降沿捕获
 		{
 			Dval=TIM_GetCapture4(TIM4);					               //读取CCR4也可以清CC4IF标志位
-			if (start)
+			if (start) // 记录持续时间数据
 			{
 				if (type == 0)
 					type = 2;
@@ -156,10 +159,11 @@ void TIM4_IRQHandler(void)
 	TIM_ClearITPendingBit(TIM4,TIM_IT_Update|TIM_IT_CC4);	 	    
 }
 
-//处理红外键盘
-//返回值:
-//	 0,没有任何按键按下
-//其他,按下的按键键值.
+/**
+* 遥控扫描
+*
+* @return 0,没有任何按键按下；其他：按下的按键键值
+*/
 u8 Remote_Scan(void)
 {
 	u8 sta=0;       
@@ -184,10 +188,11 @@ u8 Remote_Scan(void)
   return sta;
 }
 
-//处理红外键盘增强
-//返回值:
-//	 0,没有任何按键按下
-//其他,按下的按键键值.
+/**
+* 遥控扫描（不校验地址）
+*
+* @return 0,没有任何按键按下；其他：按下的按键键值
+*/
 u16 Remote_Scan_Pro(void)
 {
 	u16 sta=0;       
@@ -215,10 +220,11 @@ u16 Remote_Scan_Pro(void)
   return sta;
 }
 
-//处理红外键盘(获取全部数据) **仅测试**
-//返回值:
-//	 0,没有任何按键按下
-//其他,数据.
+/**
+* 遥控扫描（不校验地址）
+*
+* @return 接受到的32位数据
+*/
 u32 Remote_Scan_All(void)
 {
 	u8 sta=0;
@@ -244,31 +250,11 @@ u32 Remote_Scan_All(void)
 		return 0;
 }
 
-/******
-0:   ERROR
-162: POWER   20
-98:  MODE  18
-2:   LEFT  17
-226: VOLX	 16
-194: RIGHT 15
-34:  PLAY	 14
-224: EQ	     19
-168: VOL-	 13
-144: VOL+	 12
-104: 0	  
-152: RPT   11
-176: USD   10
-48:  1	    
-24:  2	    
-122: 3	  
-16:  4		   					
-56:  5 
-90:  6
-66:  7
-74:  8
-82:  9
-******/
-
+/**
+* 反馈数字（直到按键按下）
+*
+* @return 按下的按键值
+*/
 u8 Remote_Num(void)
 {
 	RmtSta = 0; //清空之前数据记录
@@ -363,12 +349,7 @@ u8 Re_Get_Type(void)
 	return type;
 }
 
-u8 Remote_Test1(void)
-{
-	return RmtSta;
-}
-
-u32 Remote_Test2(void)
+u32 Remote_GetData(void)
 {
 	RmtSta = 0; //清空之前数据记录
 	while(1)
@@ -380,9 +361,4 @@ u32 Remote_Test2(void)
 		if (key)
 			return key;
 	}
-}
-
-u32 Remote_Test3(void)
-{
-	return RmtRec;
 }
