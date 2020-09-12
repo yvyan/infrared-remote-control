@@ -168,24 +168,31 @@ void OLED_Picture(unsigned char show[])
 		Write_IIC_Command(0xb0+y);
 		Write_IIC_Command(0x0);
 		Write_IIC_Command(0x10);
-		for(x = 0; x < 64; x++)
+		for(x = 0; x < 128; x++)
 		{
 			Write_IIC_Data(show[i++]);
 		}
 	}
 }
 
-// picture用来显示一个图片(非全屏)
-void OLED_Picture_Part(unsigned char show[], unsigned char start, unsigned char width)
+/**
+* 显示一个图片(可以非全屏)
+*
+* @param x_start 横向开始坐标（单位：像素，0-127）
+* @param length  横向长度（单位：像素）
+* @param y_start 纵向开始坐标（单位：8个像素，0-7）
+* @param width   纵向长度（单位：8个像素）
+*/
+void OLED_Picture_Part(unsigned char show[], unsigned char x_start, unsigned char length, unsigned char y_start, unsigned char width)
 {
 	unsigned char x,y;
 	unsigned int i=0;
-	for(y=start;y<start + width;y++)
+	for(y=y_start;y<y_start + width;y++)
 	{
 		Write_IIC_Command(0xb0+y);
 		Write_IIC_Command(0x0);
 		Write_IIC_Command(0x10);
-		for(x = 0; x < 128; x++)
+		for(x = x_start; x < x_start + length; x++)
 		{
 			Write_IIC_Data(show[i++]);
 		}

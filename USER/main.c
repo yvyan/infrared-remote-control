@@ -41,7 +41,7 @@ int main()
 	ShowSquareWave_Init();
 	
 	//œ‘ æª∂”≠“≥
-	OLED_Picture(guet);
+	OLED_Picture_Part(guet, 0, 64, 0, 8);
 	OLED_ShowStr(10, 1, "GUET");
 	OLED_ShowStr(8, 3, "Welcome");
 	Remote_Num(); //‘›Õ£
@@ -184,8 +184,9 @@ void AnalogLearn(void)
 		delay_ms(1500);
 		OLED_ShowStr(5, 2, "OK!");
 		a = Re_Record_OFF();
+		OLED_ShowNum(9, 2, a, 4);
 		SaveData(addr + key, 1, Re_Record_Get(), a);
-		delay_ms(30);
+		delay_ms(400);
 	}
 }
 
@@ -347,7 +348,7 @@ void ShowSquareWave_Init(void)
 */
 void ShowSquareWave(void)
 {
-	OLED_Picture_Part(show, 4, 2);
+	OLED_Picture_Part(show, 0, 128, 4, 2);
 }
 
 /**

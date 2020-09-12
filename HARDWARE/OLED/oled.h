@@ -22,7 +22,16 @@ void Write_IIC_Data(unsigned char IIC_Data);       // IIC Write Data
 void OLED_Fill_picture(unsigned char fill_Data);   //全屏显示(可用于清屏0x00)
 void OLED_Clean(unsigned char i);                  //清除某一行(0 - 3)
 void OLED_Picture(unsigned char show[]);           //显示一个图片
-void OLED_Picture_Part(unsigned char show[], unsigned char start, unsigned char width); // picture用来显示一个图片(非全屏)
+
+/**
+* 显示一个图片(可以非全屏)
+*
+* @param x_start 横向开始坐标（单位：像素，0-127）
+* @param length  横向长度（单位：像素）
+* @param y_start 纵向开始坐标（单位：8个像素，0-7）
+* @param width   纵向长度（单位：8个像素）
+*/
+void OLED_Picture_Part(unsigned char show[], unsigned char x_start, unsigned char length, unsigned char y_start, unsigned char width);
 void OLED_ShowChar(int x, int y, char chr);        //显示单个字符 x:0-15 y:0-3(x>15换行显示)
 void OLED_ShowStr(int x, int y, char show[]);      //输出字符串
 void OLED_ShowNum(int x, int y, long int num, unsigned char len); //输出数字
