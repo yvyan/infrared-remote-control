@@ -1,5 +1,8 @@
 # infrared-remote-control (基于STM32F103的红外学习遥控项目)
 
+## 详细介绍：
+https://blog.csdn.net/weixin_44048162/article/details/108739482
+
 ## 这个项目实现的功能有：
 	学习存储和发射标准NEC格式的红外信息，如机顶盒，少数电视
 	学习存储和发射非标准格式的红外信息，如风扇，空调
@@ -16,3 +19,34 @@
 	红外接收模块或者通用红外接收头
 	红外发射器
 	单片机遥控器
+
+## 接线方式：
+	OLED
+	 电源3.3v
+	 SCL -> PB6
+	 SDA -> PB7
+
+	红外接收器
+	 电源3.3v
+	 DAT -> PB9
+
+	红外发射器
+	 VCC -> 3V3
+	 GND -> PC2（使用PC2引脚输出高低电平实现对发射器的开关控制）
+	 DAT -> PA0
+
+## 代码结构：
+	Template（工程目录）
+	|- USER
+	  |- main.c (主函数文件)
+	|- SYSTEM
+	  |- delay.c (延时函数，==来自于STM32F4的库，F1的延时函数时间不准！！！==)
+	|- HARDWARE
+	  |- oled.c (OLED驱动)
+	  |- remote.c (红外接收器驱动)
+	  |- pwm.c (波形产生驱动，用于产生<kbd>38KHz</kbd> 方波)
+	  |- irsend.c (红外发射器驱动)
+	  |- stmflash.c (flash存储驱动)
+	  |- remote_save.c (在stmflash.c的基础上编写的便于存储红外数据的存储驱动)
+	
+	其他文件和目录均来自于正点原子库函数模版
